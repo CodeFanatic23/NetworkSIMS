@@ -11,9 +11,9 @@ import java.awt.Color;
 import java.awt.*;
 
 public class SimGUI extends GUIState {
-	//TODO:  Improve GUI, nodes are clashing
-	
-	
+    //TODO:  Improve GUI
+    
+    
     public Display2D display;
     public JFrame displayFrame;
     ContinuousPortrayal2D yardPortrayal = new ContinuousPortrayal2D();
@@ -46,8 +46,10 @@ public class SimGUI extends GUIState {
         // tell the portrayals what to portray and how to portray them
         yardPortrayal.setField(SimNetwork.yard);
         yardPortrayal.setPortrayalForAll(new OvalPortrayal2D() {
+            private static final long serialVersionUID = 1L;
+
             public void draw(Object object, Graphics2D graphics, DrawInfo2D info) {
-                SimNode student = (SimNode) object;
+
                 paint = new Color(123, 0, 255 - 123);
                 super.draw(object, graphics, info);
             }
