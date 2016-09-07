@@ -1,5 +1,10 @@
 package main;
+import java.io.File;
 import java.util.HashSet;
+
+import bsh.Console;
+import sim.display.GUIState;
+import sim.display.SimpleController;
 import sim.engine.*;
 import sim.util.*;
 
@@ -10,6 +15,9 @@ public class SimNode implements Steppable {
 	public HashSet<String> label;
 	public SimSkill skills;
 	private String nodeName;
+	
+	public static int sharmaVariable = 0;
+	
 	public void addLabel(String label){
 		this.label.add(label);
 	}
@@ -23,8 +31,29 @@ public class SimNode implements Steppable {
 	public SimNode(String nodeName){
 		this.setNodeName(nodeName);
 		this.label = new HashSet<String>();
+		this.skills = new SimSkill();
+	}
+	
+	@Override
+	public boolean equals(Object object) {
+		boolean result = false;
+		if (object == null || object.getClass() != getClass()) {
+			result = false;
+		} else {
+			SimNode tiger = (SimNode) object;
+			if (this.nodeName.equals(tiger.getNodeName())) {
+				result = true;
+			}
+		}
+		return result;
 	}
 
+	@Override
+	public int hashCode() {
+		int hash = 17;
+		hash = 37 * hash + this.nodeName.hashCode();
+		return hash;
+	}
 	
     public void step(SimState state) {
     	
@@ -33,6 +62,25 @@ public class SimNode implements Steppable {
         MutableDouble2D sumForces = new MutableDouble2D();
         sumForces.addIn(me);
         net.yard.setObjectLocation(this, new Double2D(sumForces));
+        if(sharmaVariable == 0){
+        	this.skills.changeSkillVal("eat", (float)0);
+        }
+        else if(sharmaVariable == 50){
+        	this.skills.changeSkillVal("eat", (float)50);
+        }
+        else if(sharmaVariable == 100){
+        	this.skills.changeSkillVal("eat", (float)100);
+        }
+        else if(sharmaVariable == 150){
+        	this.skills.changeSkillVal("eat", (float)50);
+        }
+        else if(sharmaVariable == 200){
+         state.finish();
+        }
+        sharmaVariable++;
+        System.out.println(sharmaVariable);
+    
+
     }
 
 	public String getNodeName() {
@@ -42,4 +90,5 @@ public class SimNode implements Steppable {
 	public void setNodeName(String nodeName) {
 		this.nodeName = nodeName;
 	}
+
 }

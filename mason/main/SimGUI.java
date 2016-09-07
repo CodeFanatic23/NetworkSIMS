@@ -11,9 +11,9 @@ import java.awt.Color;
 import java.awt.*;
 
 public class SimGUI extends GUIState {
-    //TODO:  Improve GUI
-    
-    
+	//TODO:  Improve GUI, nodes are clashing
+	
+	
     public Display2D display;
     public JFrame displayFrame;
     ContinuousPortrayal2D yardPortrayal = new ContinuousPortrayal2D();
@@ -30,7 +30,7 @@ public class SimGUI extends GUIState {
         super(state);
     }
     public static String getName() {
-        return "Student Schoolyard Cliques";
+        return "Sim Network";
 
     }
     public void start() {
@@ -46,11 +46,15 @@ public class SimGUI extends GUIState {
         // tell the portrayals what to portray and how to portray them
         yardPortrayal.setField(SimNetwork.yard);
         yardPortrayal.setPortrayalForAll(new OvalPortrayal2D() {
-            private static final long serialVersionUID = 1L;
+			private static final long serialVersionUID = 1L;
 
-            public void draw(Object object, Graphics2D graphics, DrawInfo2D info) {
-
-                paint = new Color(123, 0, 255 - 123);
+			public void draw(Object object, Graphics2D graphics, DrawInfo2D info) {
+                SimNode student = (SimNode) object;
+                
+                int agitationShade = (int)(student.sharmaVariable * 255 / 100.0);
+                System.out.println(agitationShade);
+                if (agitationShade > 255) agitationShade = 255;
+                paint = new Color(agitationShade, 0, 255 - agitationShade);
                 super.draw(object, graphics, info);
             }
         });
@@ -69,7 +73,7 @@ public class SimGUI extends GUIState {
         // turn off clipping
         display.setClipping(false);
         displayFrame = display.createFrame();
-        displayFrame.setTitle("Schoolyard Display");
+        displayFrame.setTitle("Sim Network");
         c.registerFrame(displayFrame);
         // register the frame so it appears in the "Display" list
         displayFrame.setVisible(true);
