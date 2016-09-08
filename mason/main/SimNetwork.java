@@ -17,7 +17,6 @@ public class SimNetwork extends SimState {
     
     private HashSet<SimNode> nodes = new HashSet<SimNode>();
     private ArrayList<String> data = new ArrayList<String>();
-   
     public Network buddies = new Network(false);
 
     public SimNetwork(long seed) {
@@ -80,7 +79,7 @@ public class SimNetwork extends SimState {
     	    		
     	    		v2.skills.addSkill("eat", (float)100.0);
     	    		yard.setObjectLocation(v2,
-    	                    new Double2D(yard.getWidth() * 0.5 + 2*random.nextDouble() - 0.5,yard.getHeight() * 0.5 + 20*random.nextDouble() - 0.5));
+    	                    new Double2D(yard.getWidth() * 0.5 + 4*random.nextDouble() - 0.5,yard.getHeight() * 0.5 + 20*random.nextDouble() - 0.5));
     	            buddies.addNode(v2);
     	            
     	    	}
@@ -97,14 +96,28 @@ public class SimNetwork extends SimState {
     	    	v2.addLabel(n[3]);
     	    	schedule.scheduleRepeating(v2);
     	    	buddies.addEdge(v1, v2, n[2]);
+    	    	System.out.println(n[3]);
+    	    	Bag b = buddies.getEdges(v1, v2,null);
+    	    	for(int i = 0; i < b.size();i++)
+    	    	{
+    	    		try
+    	    		{
+    	    			Integer.parseInt((String) ((Edge) b.get(i)).getInfo());
+    	    			((Edge) b.get(i)).setInfo(n[3]);
+    	    		}
+    	    		catch(Exception e) 
+    	    		{
+    	    			
+    	    		}
+    	    		
+    	    	}
     	    	
-    	    	
-    	    }
-    	    for(SimNode s:nodes){
-    	    	System.out.println(s.getNodeName());
-    	    }
-    	    System.out.println(nodes.size());
     	    
+    	    }
+    	    
+    	  
+    	    
+    	
     	    //writeToCheckpoint(new File("/home/anant/Downloads/gitSOP/NetworkSIMS-master/mason/main/output.txt"));
     	}
     

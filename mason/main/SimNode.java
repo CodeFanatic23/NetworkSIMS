@@ -1,10 +1,5 @@
 package main;
-import java.io.File;
 import java.util.HashSet;
-
-import bsh.Console;
-import sim.display.GUIState;
-import sim.display.SimpleController;
 import sim.engine.*;
 import sim.util.*;
 
@@ -75,8 +70,11 @@ public class SimNode implements Steppable {
         	this.skills.changeSkillVal("eat", (float)50);
         }
         else if(sharmaVariable == 200){
-         state.finish();
+        	state.kill();
+        	System.out.println("Steps-->"+state.schedule.getSteps());
+       
         }
+        
         sharmaVariable++;
         System.out.println(sharmaVariable);
     

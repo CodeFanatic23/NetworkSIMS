@@ -45,16 +45,16 @@ public class SimGUI extends GUIState {
         SimNetwork SimNetwork = (SimNetwork) state;
         // tell the portrayals what to portray and how to portray them
         yardPortrayal.setField(SimNetwork.yard);
+       
         yardPortrayal.setPortrayalForAll(new OvalPortrayal2D() {
 			private static final long serialVersionUID = 1L;
 
 			public void draw(Object object, Graphics2D graphics, DrawInfo2D info) {
-                SimNode student = (SimNode) object;
                 
-                int agitationShade = (int)(student.sharmaVariable * 255 / 100.0);
+                int agitationShade = (int)(SimNode.sharmaVariable * 255 / 100.0);
                 System.out.println(agitationShade);
                 if (agitationShade > 255) agitationShade = 255;
-                paint = new Color(agitationShade, 0, 255 - agitationShade);
+                paint = new Color(agitationShade, 255, agitationShade);
                 super.draw(object, graphics, info);
             }
         });
