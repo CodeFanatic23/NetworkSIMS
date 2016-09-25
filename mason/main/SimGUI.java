@@ -50,12 +50,23 @@ public class SimGUI extends GUIState {
 			private static final long serialVersionUID = 1L;
 
 			public void draw(Object object, Graphics2D graphics, DrawInfo2D info) {
+				SimNode s = (SimNode)object;
                 
-                int agitationShade = (int)(SimNode.sharmaVariable * 255 / 100.0);
-                System.out.println(agitationShade);
-                if (agitationShade > 255) agitationShade = 255;
-                paint = new Color(agitationShade, 255, agitationShade);
+                int agitationShade = (int)(s.sharmaVariable * 255 / 100.0);
+              //  System.out.println(agitationShade);
+               
+               
+                if (s.sharmaVariable > 75) 
+                {
+                	paint = new Color(255, 255, 255);
+                }
+                else
+                {
+                	 paint = new Color(s.sharmaVariable*3,s.sharmaVariable*3,s.sharmaVariable*2);
+                }
+                
                 super.draw(object, graphics, info);
+                
             }
         });
         buddiesPortrayal.setField(new SpatialNetwork2D(SimNetwork.yard, SimNetwork.buddies));
