@@ -13,9 +13,7 @@ public class SimSkill {
 		}
 	
 	public void addSkill(String skill,Float val){
-		this.skillMap.put(skill, val);
-		this.printMap(skillMap);
-		
+		this.skillMap.put(skill, val);		
 	}
 
 	public Map<String,Float> getSkillMap() {
