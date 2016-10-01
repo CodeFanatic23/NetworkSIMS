@@ -16,18 +16,21 @@ import sim.field.continuous.*;
 import sim.field.network.*;
 
 public class SimNetwork extends SimState {
-
-    private static final long serialVersionUID = 1L;
+	
     public static Continuous2D yard = new Continuous2D(1.0, 100, 100);
-    
     public static HashSet<SimNode> nodes = new HashSet<SimNode>();
     public static HashMap<SimNode,sim.engine.Stoppable> stopper;
-    private ArrayList<String> data = new ArrayList<String>();
-    protected static ArrayList<String> relation = new ArrayList<String>();
-    private static double spreadWidth = 0.55;
-    private static double spreadHeight = 0.4;
     public static Network buddies = new Network(false);
+    
+    protected static ArrayList<String> relation = new ArrayList<String>();
+   
     private static Schedule schedule1 = null;
+    private static final long serialVersionUID = 1L;
+    private static double spreadWidth = 0.28;
+    private static double spreadHeight = 0.4;
+    private ArrayList<String> data = new ArrayList<String>();;
+    private static int professionCounter = 0;
+   
     public SimNetwork(long seed) {
     	
     	super(seed);
@@ -39,6 +42,7 @@ public class SimNetwork extends SimState {
 		}
     	stopper = new HashMap<SimNode, Stoppable>();
     }
+    
     protected static SimNode returnNode(String nodeName)
     {
     	for(SimNode s : nodes)
@@ -52,11 +56,13 @@ public class SimNetwork extends SimState {
     }
     protected static void createChildNode(SimNode parent1,SimNode parent2)
     {
+    	//creating a child between two nodes
     	System.out.println("creating child");
     	String childName = parent1.getNodeName() + parent2.getNodeName();
     	System.out.println(childName +  " born");
     	MersenneTwisterFast random = new MersenneTwisterFast();
     	SimNode child = new SimNode(childName);
+    	child.setGenerationFlag(1);
     	sim.engine.Stoppable childstop = null;
     	child.skills.addSkill("eat", (float)100.0);
 		SimNetwork.yard.setObjectLocation(child,
@@ -72,15 +78,16 @@ public class SimNetwork extends SimState {
         buddies.addEdge(parent2,child,"100");
         SimNetwork.addEdgeLabel(parent2, child, "Parent-child");
         
-        Bag out = SimNetwork.buddies.getEdges(child, null);
-        for(int buddy = 0; buddy < out.size();buddy++)
-        {
-        		Edge e = (Edge)out.get(buddy);
-        }
+//        Bag out = SimNetwork.buddies.getEdges(child, null);
+//        for(int buddy = 0; buddy < out.size();buddy++)
+//        {
+//        		Edge e = (Edge)out.get(buddy);
+//        }
     }
     private void takeRelation()
     {
-    	try (BufferedReader br = new BufferedReader(new FileReader("C://Programming/Java/Mason/mason/main/relation.txt"))) {
+    	//taking relation
+    	try (BufferedReader br = new BufferedReader(new FileReader("C:/Users/Anants pc/Downloads/Compressed/NetworkSIMS-master/mason/main/relation.txt"))) {
     	    String line;
     	    while ((line = br.readLine()) != null) {
     	       // process the line.
@@ -99,8 +106,8 @@ public class SimNetwork extends SimState {
     
     private  void takeInputFromFile() throws IOException
     {
-
-    	try (BufferedReader br = new BufferedReader(new FileReader("C://Programming/Java/Mason/mason/main/input.txt"))) {
+    	//taking initial states
+    	try (BufferedReader br = new BufferedReader(new FileReader("C:/Users/Anants pc/Downloads/Compressed/NetworkSIMS-master/mason/main/input.txt"))) {
     	    String line;
     	    while ((line = br.readLine()) != null) {
     	       // process the line.
@@ -115,7 +122,7 @@ public class SimNetwork extends SimState {
     protected static void addEdgeLabel(SimNode v1,SimNode v2,String s)
     {
     	Bag b = buddies.getEdges(v1, v2,null);
-    	
+    	//adding label on the edge between two nodes
     	for(int i = 0; i < b.size();i++)
     	{
     		
@@ -127,14 +134,41 @@ public class SimNetwork extends SimState {
     		}
     		catch(Exception e) 
     		{
-    			
+    			continue;
     		}
     		
     	}
     }
-    public  void stopNode()
+    
+    public static String EquiLikelyProfession()
     {
-    	//schedule.scheduleRepeating();
+    	//distributing profession equally
+    	if(professionCounter%5 == 0)
+    	{
+    		professionCounter++;
+    		return "farmer";
+    	}
+    	else if(professionCounter%5 == 1)
+    	{
+    		professionCounter++;
+    		return "doctor";
+    	}
+    	else if(professionCounter%5 == 2)
+    	{
+    		professionCounter++;
+    		return "craftsman";
+    	}
+    	else if(professionCounter%5 == 3)
+    	{
+    		professionCounter++;
+    		return "teacher";
+    	}
+    	else if(professionCounter%5 == 4)
+    	{
+    		professionCounter++;
+    		return "banker";
+    	}
+    	return "";
     }
     private  void takeInput(Schedule schedule) throws IOException
     {
@@ -150,6 +184,7 @@ public class SimNetwork extends SimState {
     	    	SimNode v2 = null;
     	    	if(n.length == 1)
     	    	{
+    	    		//single node
     	    		flag = 1;
     	    	}
     	    	else
@@ -157,9 +192,9 @@ public class SimNetwork extends SimState {
     	    		v2 = new SimNode(n[1]);
     	    		flag = 0;
     	    	}
-    	    	//System.out.println(v1.getNodeName()+"nodes.add--" + nodes.add(v1));
     	    	if(nodes.add(v1))
     	    	{
+    	    		//adding node to graph
     	    		v1.skills.addSkill("eat", (float)100.0);
     	    		yard.setObjectLocation(v1,
     	                    new Double2D(yard.getWidth() * spreadWidth + 2*random.nextDouble() - spreadWidth,yard.getHeight() * spreadHeight + 50*random.nextDouble() - spreadHeight));
@@ -179,6 +214,7 @@ public class SimNetwork extends SimState {
     	    	}
     	    	if(flag == 0)
     	    	{
+    	    		//adding label to v1
     	    		v1.addLabel(n[3]);
     	    	}
     	    	
@@ -187,7 +223,7 @@ public class SimNetwork extends SimState {
     	    	{
 	    	    	if(nodes.add(v2))
 	    	    	{
-	    	    		
+	    	    		//adding v2 to graph
 	    	    		v2.skills.addSkill("eat", (float)100.0);
 	    	    		yard.setObjectLocation(v2,
 	    	                    new Double2D(yard.getWidth() * spreadWidth + 13*random.nextDouble() - spreadWidth,yard.getHeight() * spreadHeight + 20*random.nextDouble() - spreadHeight));
@@ -211,31 +247,13 @@ public class SimNetwork extends SimState {
 	    	    	
 	    	    	buddies.addEdge(v1, v2, n[2]);
 	    	    	System.out.println(v1.getNodeName() + " " + v2.getNodeName() + "  " +  n[3]);
-//	    	    	Bag b = buddies.getEdges(v1, v2,null);
-//	    	    	for(int i = 0; i < b.size();i++)
-//	    	    	{
-//	    	    		try
-//	    	    		{
-//	    	    			Integer.parseInt((String) ((Edge) b.get(i)).getInfo());
-//	    	    			((Edge) b.get(i)).setInfo(n[3]);
-//	    	    		}
-//	    	    		catch(Exception e) 
-//	    	    		{
-//	    	    			
-//	    	    		}
-//	    	    		
-//	    	    	}
 	    	    	SimNetwork.addEdgeLabel(v1, v2, n[3]);
 	    	    	
 	    	    
 	    	    }
     	    }
     	    
-    	  
-    	    
-    	
-    	    //writeToCheckpoint(new File("/home/anant/Downloads/gitSOP/NetworkSIMS-master/mason/main/output.txt"));
-    	}
+       	}
     
     
     public void start() {
