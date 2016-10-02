@@ -56,7 +56,7 @@ public class SimGUI extends GUIState {
               //  System.out.println(agitationShade);
                
                
-                if (s.sharmaVariable > 75) 
+                if (s.sharmaVariable >= s.getDeathAge()) 
                 {
                 	paint = new Color(255, 255, 255);
                 }
@@ -80,7 +80,7 @@ public class SimGUI extends GUIState {
     public void init(Controller c) {
         super.init(c);
         // make the displayer
-        display = new Display2D(600, 600, this);
+        display = new Display2D(1000, 1000, this);
         // turn off clipping
         display.setClipping(false);
         displayFrame = display.createFrame();

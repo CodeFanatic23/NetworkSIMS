@@ -29,10 +29,21 @@ public class SimNode implements Steppable {
 	private int generationFlag;
 	private String profession;
 	private Integer professionValue;
+	private int professionAge;
 	private Random r;
 	private double randomNormal;
-	private int professionAge;
 	private int totalMentee;
+	private Integer maxProfessionalValue;
+	private String Gender;
+	
+	
+	private int toddlerAge;
+	private int adolescentAge;
+	private int teenagerAge;
+	private int adultAge;
+	private int middleAge;
+	private int oldAge;
+	private int deathAge;
 	
 	public void addLabel(String label){
 		this.label.add(label);
@@ -54,6 +65,17 @@ public class SimNode implements Steppable {
 		setProfessionAge((int) (randomNormal*1 + 16));
 		setTotalMentee((int) (randomNormal*1 + 3));
 		spouseObject = null;
+		setMaxProfessionalValue((int)(randomNormal*5 + 20));
+		
+		setToddlerAge(1);
+		setAdolescentAge(((int) (randomNormal*1 + 9))>10 ? 10 : (int) (randomNormal*1 + 9));  //at max it can be 10
+		setTeenagerAge(((int) (randomNormal*2 + 12))>14 ? 14 : (int) (randomNormal*2 + 12));  //at max it can be 14
+		setTeenagerAge(getTeenagerAge()<=10?11:getTeenagerAge()); //minimum it can be 11
+		setAdultAge((int) (r.nextGaussian()*2 + 22)>24 ? 24 : (int) (r.nextGaussian()*2 + 22)); // at max it can be 24
+		setMiddleAge((int) (r.nextGaussian()*2 + 34));
+		setOldAge((int) (r.nextGaussian()*2 + 55));
+		setDeathAge((int) (r.nextGaussian()*2 + 75));
+		
 	}
 	public SimNode(String nodeName){
 		this.setNodeName(nodeName);
@@ -70,6 +92,16 @@ public class SimNode implements Steppable {
 		setProfessionAge((int) (randomNormal*1 + 16));
 		setTotalMentee((int) (randomNormal*1 + 3));
 		spouseObject = null;
+		setMaxProfessionalValue((int)(randomNormal*5 + 20));
+		
+		setToddlerAge(1);
+		setAdolescentAge(((int) (randomNormal*1 + 9))>10 ? 10 : (int) (randomNormal*1 + 9)); //at max it can be 10
+		setTeenagerAge(((int) (randomNormal*2 + 12))>14 ? 14 : (int) (randomNormal*2 + 12)); //at max it can be 14
+		setTeenagerAge(getTeenagerAge()<=10?11:getTeenagerAge()); //minimum it can be 11
+		setAdultAge((int) (r.nextGaussian()*2 + 22)>24 ? 24 : (int) (r.nextGaussian()*2 + 22)); // at max it can be 24
+		setMiddleAge((int) (r.nextGaussian()*2 + 34));
+		setOldAge((int) (r.nextGaussian()*2 + 55));
+		setDeathAge((int) (r.nextGaussian()*2 + 75));
 	}
 	
 	@Override
@@ -93,6 +125,137 @@ public class SimNode implements Steppable {
 		return hash;
 	}
 	
+	private void setHealth()
+	{
+		// health = a*age^2 + b*age    (increase with age and then decreases)
+		//k maximum health
+		//t age at which it will have maximum health
+		//d age at which it will die
+		float k = (float)(randomNormal*20 + 180) ;
+    	int t = (int)(randomNormal*7 + 27);
+    	int d = getDeathAge();
+    	float a = k/(t*t-d*t);
+    	float b = -k*d/(t*t-d*t);
+    	float healthVar = a*sharmaVariable*sharmaVariable + b*sharmaVariable ;
+    	this.skills.changeSkillVal("health", healthVar);
+    	//System.out.println("health of " + this.nodeName + " is " + this.skills.getSkillMap().get("health"));
+	}
+	
+	private void setknowledge()
+	{
+		// knowledge = c*(1-pow(e,-kx))
+		//c ~ N(23,1)
+		//k = 0.055
+		float c =  (float)(randomNormal*2 + 23) ;
+		float knowledgeVar = (float)(c*(1-Math.exp(-1*(0.055)*sharmaVariable)));
+		this.skills.getSkillMap().put("knowledge", knowledgeVar);
+		//System.out.println("knowledge of " + this.nodeName + " is " + this.skills.getSkillMap().get("knowledge"));
+		
+		
+	}
+	
+	private void findAndMarryFromFile()
+	{
+		for(String line : SimNetwork.relation)
+    	{
+    		String[] n = line.split(" ");
+	    	if(this.getNodeName().equals(n[0]) || this.getNodeName().equals(n[1]))
+	    	{
+    	        	Bag out = SimNetwork.buddies.getEdges(SimNetwork.returnNode(n[0]), null);
+    	        	int flag = 0;
+    	        	for(int buddy = 0; buddy < out.size();buddy++)
+    	        	{
+    	        		//checking if already married
+    	        		if(((String) (((Edge) out.get(buddy)).getInfo())).equals("marriage"))
+    	        		{
+    	        			System.out.println(this.getNodeName() + " " + this.getSpouseObject().getNodeName() + " already married");
+    	        			flag = 1;
+    	        			break;
+    	        		}
+    	        	}
+    	        	if(flag == 0)
+    	        	{
+    	        		if(this.getNodeName().equals(n[0]))
+    	        		{
+    	        			//marring the node v0 v1
+    	        			SimNode n1 = SimNetwork.returnNode(n[1]);
+    	        			if(n1 != null  ){
+	    	        			System.out.println(this.getNodeName() + " " + n1.getNodeName() + " happily married");
+	    	        			
+	    	        			SimNetwork.buddies.addEdge(this,n1,n[2]);
+	    	        			SimNetwork.addEdgeLabel(this, n1, n[3]);
+	    	        			this.spouseObject = n1;
+	    	        			n1.setSpouseObject(this);
+    	        			}
+    	        			else
+    	        			{
+    	        				System.out.println("spouse already dead or not born");
+    	        			}
+    	        			
+    	        		}
+    	        		else
+    	        		{
+    	        			//marring the node v1 v0
+    	        			SimNode n0 = SimNetwork.returnNode(n[0]);
+    	        			if(n0 != null)
+    	        			{
+    	        				System.out.println(this.getNodeName() + " " + n0.getNodeName() + " happily married");
+	    	        			SimNetwork.buddies.addEdge(this,n0,n[2]);
+	    	        			SimNetwork.addEdgeLabel(this, n0, n[3]);
+	    	        			this.spouseObject = n0;
+	    	        			n0.setSpouseObject(this);
+    	        			}
+    	        			else
+    	        			{
+    	        				//spouse not born or dead
+    	        				System.out.println("spouse already dead or not born");
+    	        			}
+    	        		}
+    	        		
+    	        	}
+    	    		
+	    	}
+    	}
+	}
+	
+	private void findSimilarAndMarry()
+	{
+		if(this.spouseObject == null)
+		{
+			Bag n = SimNetwork.buddies.getAllNodes();
+			float diff = (float) 1000.0;
+			float diff1;
+			SimNode spouse = null;
+			for (int i = 0; i < n.size(); i++) 
+			{
+				//node must have different gender and node must be unmarried
+				if( (((SimNode)n.get(i)).spouseObject == null) &&(Gender.equals("male") && (((SimNode)n.get(i)).Gender).equals("female") || Gender.equals("female") && (((SimNode)n.get(i)).Gender).equals("male")) )
+				{
+					
+					diff1 = ((SimNode)n.get(i)).skills.getSkillMap().get("knowledge") - this.skills.getSkillMap().get("knowledge");
+					if(diff1 < diff)
+					{
+						diff = diff1;
+						spouse = (SimNode)n.get(i);
+					}
+				}
+			}
+			if(spouse != null)
+			{
+				System.out.println(this.getNodeName() + " " + spouse.getNodeName() + " happily married");
+				
+				SimNetwork.buddies.addEdge(this,spouse,100);
+				SimNetwork.addEdgeLabel(this, spouse, "marriage");
+				this.spouseObject = spouse;
+				spouse.setSpouseObject(this);
+			}
+			else
+			{
+				System.out.println("no spouse found for " + nodeName);
+			}
+		}
+	}
+	
     public  void step(SimState state) {
     	
     	
@@ -101,20 +264,31 @@ public class SimNode implements Steppable {
         MutableDouble2D sumForces = new MutableDouble2D();
         sumForces.addIn(me);
         net.yard.setObjectLocation(this, new Double2D(sumForces));
+        
+        //set health skill of node
+        setHealth();
+        setknowledge();
+        
+        //approximate life stages
 //        1) Born		0
-//        2)Toddler	1
+//        2)Toddler		1
 //        3)Adolescent	8
 //        4)Teenager	13
 //        5)Adult		21------>Marriage	25
-//        		|------->Children	27
+//        				|------->Children	27
 //
 //        6)Middle age	35
-//        7)Old age	50
+//        7)Old 	age	50
 //        8)Death		75
+        
+        
         if(getProfessionValue() != null && generationFlag != 0)
         {
         	//increment value with time and saturate it till it reaches value of mentor
-        	setProfessionValue(getProfessionValue() + 1);
+        	if(mentorObject != null )
+        	{
+        		setProfessionValue(getProfessionValue() + 1);
+        	}
         	
         	if(mentorObject != null && getProfessionValue() >= mentorObject.getProfessionValue())
         	{
@@ -137,14 +311,15 @@ public class SimNode implements Steppable {
         }
         if(generationFlag == 0)
         {
-        	//increase professional value but no mentor
-        	if(getProfessionValue() == null)
+        	//professional value must be at max maxProfessioanlValue
+        	if(getProfessionValue() != null && getProfessionValue() <= getMaxProfessionalValue())
+        	{
+        		//increase professional value but no mentor
+            		setProfessionValue(getProfessionValue() + 1);
+        	}
+        	else if(getProfessionValue() == null)
         	{
         		setProfessionValue(new Integer(0));
-        	}
-        	else
-        	{
-        		setProfessionValue(getProfessionValue() + 1);
         	}
         }
         //sharmaVariabe is age of the node
@@ -194,89 +369,32 @@ public class SimNode implements Steppable {
         	//born
         	this.skills.changeSkillVal("eat", (float)0);
         }
-        else if(sharmaVariable == 1){
+        else if(sharmaVariable == getToddlerAge()){
         	//todler
         	System.out.println(this.getNodeName() + " entered todler stage");
         	this.skills.changeSkillVal("eat", (float)20);
         }
-        else if(sharmaVariable == 8){
+        else if(sharmaVariable == getAdolescentAge()){
         		//adolescent
         	System.out.println(this.getNodeName() + " entered adolescent stage");
         	this.skills.changeSkillVal("eat", (float)70);
         }
-        else if(sharmaVariable == 13){
+        else if(sharmaVariable == getTeenagerAge()){
         	//teenager
         	System.out.println(this.getNodeName() + " entered teenager stage");
         	this.skills.changeSkillVal("eat", (float)75);
         }
-        else if(sharmaVariable == 21){
+        else if(sharmaVariable == getAdultAge()){
         	//adult
         	System.out.println(this.getNodeName() + " entered adult stage");
         	this.skills.changeSkillVal("eat", (float)80);
         }
         else if(sharmaVariable == 25)
         {
-        	
-        	for(String line : SimNetwork.relation)
-        	{
-        		String[] n = line.split(" ");
-    	    	if(this.getNodeName().equals(n[0]) || this.getNodeName().equals(n[1]))
-    	    	{
-	    	        	Bag out = SimNetwork.buddies.getEdges(SimNetwork.returnNode(n[0]), null);
-	    	        	int flag = 0;
-	    	        	for(int buddy = 0; buddy < out.size();buddy++)
-	    	        	{
-	    	        		//checking if already married
-	    	        		if(((String) (((Edge) out.get(buddy)).getInfo())).equals("marriage"))
-	    	        		{
-	    	        			System.out.println(this.getNodeName() + " " + this.getSpouseObject().getNodeName() + " already married");
-	    	        			flag = 1;
-	    	        			break;
-	    	        		}
-	    	        	}
-	    	        	if(flag == 0)
-	    	        	{
-	    	        		if(this.getNodeName().equals(n[0]))
-	    	        		{
-	    	        			//marring the node v0 v1
-	    	        			SimNode n1 = SimNetwork.returnNode(n[1]);
-	    	        			if(n1 != null  ){
-		    	        			System.out.println(this.getNodeName() + " " + n1.getNodeName() + " happily married");
-		    	        			
-		    	        			SimNetwork.buddies.addEdge(this,n1,n[2]);
-		    	        			SimNetwork.addEdgeLabel(this, n1, n[3]);
-		    	        			this.spouseObject = n1;
-		    	        			n1.setSpouseObject(this);
-	    	        			}
-	    	        			else
-	    	        			{
-	    	        				System.out.println("spouse already dead or not born");
-	    	        			}
-	    	        			
-	    	        		}
-	    	        		else
-	    	        		{
-	    	        			//marring the node v1 v0
-	    	        			SimNode n0 = SimNetwork.returnNode(n[0]);
-	    	        			if(n0 != null)
-	    	        			{
-	    	        				System.out.println(this.getNodeName() + " " + n0.getNodeName() + " happily married");
-		    	        			SimNetwork.buddies.addEdge(this,n0,n[2]);
-		    	        			SimNetwork.addEdgeLabel(this, n0, n[3]);
-		    	        			this.spouseObject = n0;
-		    	        			n0.setSpouseObject(this);
-	    	        			}
-	    	        			else
-	    	        			{
-	    	        				//spouse not born or dead
-	    	        				System.out.println("spouse already dead or not born");
-	    	        			}
-	    	        		}
-	    	        		
-	    	        	}
-	    	    		
-    	    	}
-        	}
+        	//marriage age
+        	//findAndMarryFromFile();
+        	findSimilarAndMarry();
+        
         }
        
         else if(sharmaVariable == 27)
@@ -285,29 +403,38 @@ public class SimNode implements Steppable {
 				if(this.spouseObject != null)
 				{
 					//if spouse present than create child named lexicographically
-		        	if(this.getNumberOfChildren() <= this.spouseObject.getNumberOfChildren())
-		        	{
-		        		if(this.nodeName.compareToIgnoreCase(this.getSpouseObject().getNodeName())<0)
-		        			SimNetwork.createChildNode(this, this.getSpouseObject());
-		        		else
-		        			SimNetwork.createChildNode( this.getSpouseObject(),this);
-		        		this.setNumberOfChildren(this.getNumberOfChildren() - 1);
-		        		System.out.println(this.getNodeName() + " " + this.getSpouseObject().getNodeName() + " gave birth");
-		        	}
+					
+					if(( 0 + (int)(Math.random() * 100))<=50)
+					{
+			        	if(this.getNumberOfChildren() <= this.spouseObject.getNumberOfChildren())
+			        	{
+			        		if(this.nodeName.compareToIgnoreCase(this.getSpouseObject().getNodeName())<0)
+			        			SimNetwork.createChildNode(this, this.getSpouseObject());
+			        		else
+			        			SimNetwork.createChildNode( this.getSpouseObject(),this);
+			        		this.setNumberOfChildren(this.getNumberOfChildren() - 1);
+			        		System.out.println(this.getNodeName() + " " + this.getSpouseObject().getNodeName() + " gave birth");
+			        	}
+					}
+					else
+					{
+						System.out.println("probability less");
+						this.setNumberOfChildren(this.getNumberOfChildren() - 1);
+					}
 		        	
         	}
         }
-        else if(sharmaVariable == 35){
+        else if(sharmaVariable == getMiddleAge()){
         	//middle age
         	System.out.println(this.getNodeName() + " entered middle age");
         	this.skills.changeSkillVal("eat", (float)60);
         }
-        else if(sharmaVariable == 50){
+        else if(sharmaVariable == getOldAge()){
         	//old age
         	System.out.println(this.getNodeName() + " entered old age");
         	this.skills.changeSkillVal("eat", (float)50);
         }
-        else if(sharmaVariable == 75)
+        else if(sharmaVariable == getDeathAge())
         { 
         	//dead
         	this.skills.changeSkillVal("eat", (float)0);
@@ -464,6 +591,96 @@ public class SimNode implements Steppable {
 
 	public void setTotalMentee(int totalMentee) {
 		this.totalMentee = totalMentee;
+	}
+
+
+	public Integer getMaxProfessionalValue() {
+		return maxProfessionalValue;
+	}
+
+
+	public void setMaxProfessionalValue(Integer maxProfessionalValue) {
+		this.maxProfessionalValue = maxProfessionalValue;
+	}
+
+
+	public String getGender() {
+		return Gender;
+	}
+
+
+	public void setGender(String gender) {
+		Gender = gender;
+	}
+
+
+	public int getToddlerAge() {
+		return toddlerAge;
+	}
+
+
+	public void setToddlerAge(int toddlerAge) {
+		this.toddlerAge = toddlerAge;
+	}
+
+
+	public int getAdolescentAge() {
+		return adolescentAge;
+	}
+
+
+	public void setAdolescentAge(int adolescentAge) {
+		this.adolescentAge = adolescentAge;
+	}
+
+
+	public int getTeenagerAge() {
+		return teenagerAge;
+	}
+
+
+	public void setTeenagerAge(int teenagerAge) {
+		this.teenagerAge = teenagerAge;
+	}
+
+
+	public int getAdultAge() {
+		return adultAge;
+	}
+
+
+	public void setAdultAge(int adultAge) {
+		this.adultAge = adultAge;
+	}
+
+
+	public int getMiddleAge() {
+		return middleAge;
+	}
+
+
+	public void setMiddleAge(int middleAge) {
+		this.middleAge = middleAge;
+	}
+
+
+	public int getOldAge() {
+		return oldAge;
+	}
+
+
+	public void setOldAge(int oldAge) {
+		this.oldAge = oldAge;
+	}
+
+
+	public int getDeathAge() {
+		return deathAge;
+	}
+
+
+	public void setDeathAge(int deathAge) {
+		this.deathAge = deathAge;
 	}
 
 }

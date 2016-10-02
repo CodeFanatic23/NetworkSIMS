@@ -30,6 +30,7 @@ public class SimNetwork extends SimState {
     private static double spreadHeight = 0.4;
     private ArrayList<String> data = new ArrayList<String>();;
     private static int professionCounter = 0;
+    private static int genderCounter = 0;
    
     public SimNetwork(long seed) {
     	
@@ -62,15 +63,26 @@ public class SimNetwork extends SimState {
     	System.out.println(childName +  " born");
     	MersenneTwisterFast random = new MersenneTwisterFast();
     	SimNode child = new SimNode(childName);
+    	
+    	//child is in generation more than zero
     	child.setGenerationFlag(1);
     	sim.engine.Stoppable childstop = null;
+    	
+    	//adding skills to node
     	child.skills.addSkill("eat", (float)100.0);
+    	child.skills.addSkill("health",(float) 0.0);
+		child.skills.addSkill("knowledge",(float) 0.0);
+		
+		//set gender
+		child.setGender(EquiLikelyGender());
+		
 		SimNetwork.yard.setObjectLocation(child,
                 new Double2D(SimNetwork.yard.getWidth() * spreadWidth + 2*random.nextDouble() - spreadWidth,SimNetwork.yard.getHeight() * spreadHeight + 50*random.nextDouble() - spreadHeight));
         buddies.addNode(child);
         childstop = schedule1.scheduleRepeating(child);
         stopper.put(child,childstop);
         nodes.add(child);
+        
         //WARNING: weight between parent and child is by default 100
         buddies.addEdge(parent1,child,"100");
         SimNetwork.addEdgeLabel(parent1, child, "Parent-child");
@@ -78,11 +90,6 @@ public class SimNetwork extends SimState {
         buddies.addEdge(parent2,child,"100");
         SimNetwork.addEdgeLabel(parent2, child, "Parent-child");
         
-//        Bag out = SimNetwork.buddies.getEdges(child, null);
-//        for(int buddy = 0; buddy < out.size();buddy++)
-//        {
-//        		Edge e = (Edge)out.get(buddy);
-//        }
     }
     private void takeRelation()
     {
@@ -170,6 +177,21 @@ public class SimNetwork extends SimState {
     	}
     	return "";
     }
+    public static String EquiLikelyGender()
+    {
+    	//distributing profession equally
+    	if(genderCounter%2 == 0)
+    	{
+    		genderCounter++;
+    		return "male";
+    	}
+    	else
+    	{
+    		genderCounter++;
+    		return "female";
+    	}
+
+    }
     private  void takeInput(Schedule schedule) throws IOException
     {
     		int flag = 0;
@@ -194,8 +216,14 @@ public class SimNetwork extends SimState {
     	    	}
     	    	if(nodes.add(v1))
     	    	{
-    	    		//adding node to graph
+    	    		//adding skills to node
     	    		v1.skills.addSkill("eat", (float)100.0);
+    	    		v1.skills.addSkill("health",(float) 0.0);
+    	    		v1.skills.addSkill("knowledge",(float) 0.0);
+    	    		
+    	    		//setting gender
+    	    		v1.setGender(EquiLikelyGender());
+    	    		//adding node to graph
     	    		yard.setObjectLocation(v1,
     	                    new Double2D(yard.getWidth() * spreadWidth + 2*random.nextDouble() - spreadWidth,yard.getHeight() * spreadHeight + 50*random.nextDouble() - spreadHeight));
     	            buddies.addNode(v1);
@@ -223,8 +251,15 @@ public class SimNetwork extends SimState {
     	    	{
 	    	    	if(nodes.add(v2))
 	    	    	{
-	    	    		//adding v2 to graph
+	    	    		
+	    	    		//adding skills to node
 	    	    		v2.skills.addSkill("eat", (float)100.0);
+	    	    		v2.skills.addSkill("health",(float) 0.0);
+	    	    		v2.skills.addSkill("knowledge",(float) 0.0);
+	    	    		
+	    	    		//setting gender
+	    	    		v2.setGender(EquiLikelyGender());
+	    	    		//adding v2 to graph
 	    	    		yard.setObjectLocation(v2,
 	    	                    new Double2D(yard.getWidth() * spreadWidth + 13*random.nextDouble() - spreadWidth,yard.getHeight() * spreadHeight + 20*random.nextDouble() - spreadHeight));
 	    	            buddies.addNode(v2);
