@@ -179,14 +179,14 @@ public class SimNetwork extends SimState {
     public static String EquiLikelyGender()
     {
     	//distributing profession equally
-    	if(genderCounter%2 == 0)
+    	if(getGenderCounter()%2 == 0)
     	{
-    		genderCounter++;
+    		setGenderCounter(getGenderCounter() + 1);
     		return "male";
     	}
     	else
     	{
-    		genderCounter++;
+    		setGenderCounter(getGenderCounter() + 1);
     		return "female";
     	}
 
@@ -320,6 +320,14 @@ public class SimNetwork extends SimState {
 
 	public void setData(ArrayList<String> data) {
 		this.data = data;
+	}
+
+	public static int getGenderCounter() {
+		return genderCounter;
+	}
+
+	public static void setGenderCounter(int genderCounter) {
+		SimNetwork.genderCounter = genderCounter;
 	}
 
     

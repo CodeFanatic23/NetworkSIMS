@@ -1,11 +1,6 @@
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Random;
-
-import com.sun.org.apache.xerces.internal.util.SynchronizedSymbolTable;
-
 import sim.engine.*;
 import sim.field.network.Edge;
 import sim.util.*;
