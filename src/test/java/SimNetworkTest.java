@@ -1,15 +1,15 @@
-import static org.junit.Assert.*;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.mockito.Mockito;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 
-import sim.engine.Schedule;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.mockito.Mockito;
+
 import sim.engine.SimState;
 import sim.field.network.Edge;
 import sim.util.Bag;
@@ -44,14 +44,39 @@ public class SimNetworkTest {
 	}
 	@Test
 	public void edgeGetsAddedProperly(){
+		obj.fullResetState();
 		a.buddies.addEdge(node1, node2, "100");
+		try{
+			a.createChildNode(node1, node2);
+			}
+			catch(Exception e){
+				
+			}
+		SimNode child=null;
+		Bag nodes = a.buddies.getAllNodes();
+		for(int i = 0;i<nodes.size();i++){
+			SimNode n1 = ((SimNode)nodes.get(i));
+			if(!(n1.equals(node1)) && !(n1.equals(node2))){
+				child = n1;
+				break;
+			}
+		}
+		
 		Bag b = a.buddies.getEdges(node1, node2, null);
+		Bag b2 = a.buddies.getEdges(node1, child, null);
+		Bag b3 = a.buddies.getEdges(child, node2, null);
+		
+		
 		assertEquals(b.size(),1);
+		assertEquals(b2.size(),1);
+		assertEquals(b3.size(),1);
+		
+		
 	}
 	@Test
 	public void labelGetsAddedProperly(){
 		obj.addNodeToNetwork();
-		obj.edgeGetsAddedProperly();
+		a.buddies.addEdge(node1,node2,"100");
 		a.addEdgeLabel(node1, node2, "LABEL");
 		//verify(a).addEdgeLabel(node1, node2, "LABEL");
 		Bag out = a.buddies.getEdges(a.returnNode(node1.getNodeName()), null);
@@ -107,6 +132,8 @@ public class SimNetworkTest {
 	public void startUpTest(){
 		obj.fullResetState();
 		a.start();
+//		String args[] = new String[0];
+//		a.main(args);
 		assertEquals(a.nodes.size(),a.getGenderCounter());
 		
 		verify(a,times(1)).start();
