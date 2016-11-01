@@ -1,5 +1,3 @@
-import java.util.concurrent.CountDownLatch;
-
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
@@ -19,9 +17,7 @@ public class StartSimulation extends Application {
 	Scene scene;
 	Button button;
 	CheckBox checkBox;
-	static String totalTime = "";
 	static VBox layout;
-	public static final CountDownLatch latch = new CountDownLatch(1);
 	public static StartSimulation startUpTest = null;
 	private static boolean finalblock = true;
 
@@ -36,7 +32,7 @@ public class StartSimulation extends Application {
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		window = primaryStage;
-		window.setTitle("NetWorkSIMS Simulator " + StartSimulation.totalTime);
+		window.setTitle("NetWorkSIMS Simulator ");
 
 		// Form
 		Label label = new Label("Enter No. of Nodes to simulate");
@@ -73,17 +69,18 @@ public class StartSimulation extends Application {
 			// Plot
 			System.out.println("Starting Simulation with: " + node + " nodes");
 			// CALL SIMNETWORK
-			ScaleFreeConstructor sim = new ScaleFreeConstructor(node);
-			sim.generateNodes();
+			// ScaleFreeConstructor sim = new ScaleFreeConstructor(node);
+			// sim.generateNodes();
 
 			// threadName = Thread.currentThread().getName();
 			// Thread t = new Thread()
 			// {
 			// public void run(){
 			// System.out.println("aafff" + Thread.currentThread());
-			// String[] args = {};
+			String[] args = new String[0];
 			// SimNetwork simN= new SimNetwork(System.currentTimeMillis());
-			// simN.main(args);
+			SimNetwork.setNodes(node);
+			SimNetwork.main(args);
 			// //simN.start();
 			// }
 			// };
@@ -98,24 +95,26 @@ public class StartSimulation extends Application {
 			alert.setContentText("Error: " + message + " is not an valid age");
 
 			alert.showAndWait();
-//			e.printStackTrace();
+			// e.printStackTrace();
 			finalblock = false;
 			return false;
 		} finally {
-			if(finalblock){
-			Alert alert = new Alert(AlertType.INFORMATION);
-			alert.setTitle("Message");
-			alert.setHeaderText("Program setup complete");
-			alert.setContentText("You can now start simulation from SimNetwork");
-			alert.showAndWait();
-//			if(alert.getResult().getButtonData().toString().equals("OK_DONE")){
-//				SimNetwork.main(new String[0]);
-//			}
-//			else{
-//				System.out.println("Aborting");
-//			}
-			window.close();
-			}
+			// if(finalblock){
+			// Alert alert = new Alert(AlertType.INFORMATION);
+			// alert.setTitle("Message");
+			// alert.setHeaderText("Program setup complete");
+			// alert.setContentText("You can now start simulation from
+			// SimNetwork");
+			// alert.showAndWait();
+			// if(alert.getResult().getButtonData().toString().equals("OK_DONE")){
+			// SimNetwork.main(new String[0]);
+			// }
+			// else{
+			// System.out.println("Aborting");
+			// }
+
+			// window.close();
+			// }
 
 			return false;
 		}

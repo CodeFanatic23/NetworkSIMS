@@ -29,4 +29,8 @@ public class SimSkill {
 			System.out.println(e+"--"+skillMap.size());
 		}
 	}
+	
+	public float getSkillVal(String key){
+		return this.skillMap.get(key);
+	}
 }

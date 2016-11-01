@@ -1,22 +1,6 @@
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Random;
-
-import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartFrame;
-import org.jfree.chart.JFreeChart;
-import org.jfree.chart.plot.PlotOrientation;
-import org.jfree.data.statistics.HistogramDataset;
-import org.jfree.data.statistics.HistogramType;
 
 import sim.engine.SimState;
 import sim.engine.Steppable;
@@ -38,33 +22,38 @@ public class SimNode implements Steppable {
 	private SimNode spouseObject;
 	private SimNode mentorObject = null;
 	private ArrayList<SimNode> menteeObjects;
-	private int numberOfChildren;
+	protected int numberOfChildren;
 	private int generationFlag;
 	private String profession;
-	private Integer professionValue;
-	private int professionAge;
+	protected Integer professionValue;
+	protected int professionAge;
 	private Random r;
-	private double randomNormal;
+	protected double randomNormal;
 	private int totalMentee;
-	private Integer maxProfessionalValue;
-	private String Gender;
+	protected Integer maxProfessionalValue;
+	protected String Gender;
 	private static int logFlag;
 
-	private int toddlerAge;
-	private int adolescentAge;
-	private int teenagerAge;
-	private int adultAge;
-	private int middleAge;
-	private int oldAge;
-	private int deathAge;
-	private long previousAge;
+	protected int toddlerAge;
+	protected int adolescentAge;
+	protected int teenagerAge;
+	protected int adultAge;
+	protected int middleAge;
+	protected int oldAge;
+	protected int deathAge;
+	protected long previousAge;
+	
+	protected SimManager simMan = SimManager.createObj();
 
 	// private static int flag1 = 0;
 
 	public void addLabel(String label) {
 		this.label.add(label);
 	}
+	public SimNode(){
+	}
 
+	
 	public SimNode(String nodeName, SimSkill skills) {
 		this.skills = skills;
 		setNumberOfChildren(1);
@@ -168,16 +157,16 @@ public class SimNode implements Steppable {
 		// System.out.println("health of " + this.nodeName + " is " +
 		// this.skills.getSkillMap().get("health"));
 	}
-
-	private void setknowledge() {
+//BuGGy
+	protected void setknowledge() {
 		// knowledge = c*(1-pow(e,-kx))
 		// c ~ N(23,1)
 		// k = 0.055
 		float c = (float) (randomNormal * 2 + 23);
-		float knowledgeVar = (float) (c * (1 - Math.exp(-1 * (0.055) * sharmaVariable)));
-		this.skills.getSkillMap().put("knowledge", knowledgeVar);
-		// System.out.println("knowledge of " + this.nodeName + " is " +
-		// this.skills.getSkillMap().get("knowledge"));
+		float knowledgeVar = (float) (c * (1 - Math.exp(-1 * (0.055) * sharmaVariable)));// + 2000;
+		this.skills.addSkill("knowledge", knowledgeVar);
+//		 System.out.println("knowledge of " + this.nodeName + " is " + knowledgeVar);
+
 
 	}
 
@@ -232,7 +221,7 @@ public class SimNode implements Steppable {
 		}
 	}
 
-	private void findSimilarAndMarry() {
+	protected void findSimilarAndMarry() {
 		if (this.spouseObject == null) {
 			Bag n = SimNetwork.buddies.getAllNodes();
 			float diff = (float) 1000.0;
@@ -265,45 +254,13 @@ public class SimNode implements Steppable {
 		}
 	}
 
-	public void createFile(String name) {
-		Writer writer = null;
-
-		try {
-			writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(name + ".txt"), "utf-8"));
-
-		} catch (IOException ex) {
-			// report
-			System.out.println(name + " file could not be create");
-		} finally {
-			try {
-				writer.close();
-			} catch (Exception ex) {
-				/* ignore */}
-		}
-	}
-
-	private void deleteLogs() {
-		// path - /networkSIMS/src/main/resources/logs
-		String logPath = new File("").getAbsolutePath() + File.separator + "src" + File.separator + "main"
-				+ File.separator + "resources" + File.separator + "logs";
-		File folder = new File(logPath);
-		File[] listOfFiles = folder.listFiles();
-		for (int i = 0; i < listOfFiles.length; i++) {
-			if (listOfFiles[i].isFile()) {
-				File file = new File(SimNetwork.combine(logPath, listOfFiles[i].getName()));
-				SimNetwork.deleteFile(file);
-			} else if (listOfFiles[i].isDirectory()) {
-				System.out.println("not a file");
-			}
-		}
-	}
-
+	
 	public void step(SimState state) {
 
 		if (state.schedule.getSteps() == 0 && logFlag == 0) {
 			// delete all log files containing degree of nodes at different
 			// stage
-			deleteLogs();
+			simMan.deleteLogs();
 			logFlag = 1;
 		}
 		SimNetwork net = (SimNetwork) state;
@@ -460,15 +417,6 @@ public class SimNode implements Steppable {
 			this.skills.changeSkillVal("eat", (float) 0);
 			SimNode n = (SimNode) SimNetwork.buddies.removeNode(this);
 
-			// Bag out = SimNetwork.buddies.getEdges(n, null);
-			// for(int buddy = 0; buddy < out.size();buddy++)
-			// {
-			// Edge e = (Edge)out.get(buddy);
-			// SimNetwork.buddies.removeEdge(e);
-			// }
-
-			// SimNetwork.buddies.removeNode(this);
-			// System.out.println("Steps-->"+state.schedule.getSteps());
 
 			System.out.println(n.getNodeName() + " died");
 			SimNode.livingNode--;
@@ -499,19 +447,19 @@ public class SimNode implements Steppable {
 				// finishing simulation
 				System.out.println("starting gui");
 				System.out.println(Thread.currentThread());
-
-				PlotGUI.totalTime = Long.toString(state.schedule.getSteps());
-				PlotGUI p = new PlotGUI();
-				p.start();
-
+//				PlotGUI.totalTime = Long.toString(state.schedule.getSteps());
+//				PlotGUI p = new PlotGUI();
+//				p.start();
+				SimManager.writeIntoFile(Long.toString(state.schedule.getSteps()), "src/main/resources/", "data", false);
+				System.out.println("DONE!");
 				state.finish();
 
 			}
 			return;
 		}
-		System.out.println("living node" + livingNode);
+//		System.out.println("living node" + livingNode);
 		// increase age
-		System.out.println("age - " + this.nodeName + " " + sharmaVariable);
+//		System.out.println("age - " + this.nodeName + " " + sharmaVariable);
 		sharmaVariable++;
 
 		long degree = SimNetwork.buddies.getEdges(this, null).size();
@@ -519,75 +467,9 @@ public class SimNode implements Steppable {
 
 	}
 
-	private void createDegreeDistribution(long age) {
-		BufferedReader br = null;
-		String basePath = new File("").getAbsolutePath();
-		ArrayList<String> degree = new ArrayList<String>();
-
-		try {
-
-			br = new BufferedReader(
-					new FileReader(SimNetwork.combine(basePath, "src" + File.separator + "main" + File.separator
-							+ "resources" + File.separator + "logs" + File.separator + Long.toString(age) + ".txt")));
-			String line;
-			while ((line = br.readLine()) != null) {
-				// process the line.
-				System.out.println("line " + line);
-
-				degree.add(line);
-
-			}
-
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} finally {
-			try {
-				br.close();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		ArrayList<Double> x = new ArrayList<Double>();
-		System.out.println("degree-" + degree);
-		for (int i = 0; i < degree.size(); i++) {
-			for (String j : degree.get(i).split(" ")) {
-				x.add(Double.parseDouble(j));
-			}
-		}
-		double[] x1 = new double[x.size()];
-		for (int i = 0; i < x1.length; i++) {
-			x1[i] = x.get(i).intValue();
-			System.out.println(x1[i]);
-		}
-
-		int number = 100;
-		HistogramDataset dataset = new HistogramDataset();
-		dataset.setType(HistogramType.FREQUENCY);
-		dataset.addSeries("Histogram", x1, number);
-		String plotTitle = "Histogram";
-		String xaxis = "degree";
-		String yaxis = "frequency";
-		PlotOrientation orientation = PlotOrientation.VERTICAL;
-		boolean show = false;
-		boolean toolTips = false;
-		boolean urls = false;
-		JFreeChart chart = ChartFactory.createHistogram(plotTitle, xaxis, yaxis, dataset, orientation, show, toolTips,
-				urls);
-		int width = 500;
-		int height = 300;
-		ChartFrame frame = new ChartFrame("Degree distribution", chart);
-		frame.pack();
-		frame.setVisible(true);
-	}
-
 	private void logDegreeToFile(String name, long degree) {
 		String content = Long.toString(degree) + "\r\n";
-		ScaleFreeConstructor.writeIntoFile(content, "src/main/resources/logs/", name, true);
+		SimManager.writeIntoFile(content, "src/main/resources/logs/", name, true);
 	}
 
 	public String getNodeName() {
@@ -741,5 +623,6 @@ public class SimNode implements Steppable {
 	public void setDeathAge(int deathAge) {
 		this.deathAge = deathAge;
 	}
+
 
 }

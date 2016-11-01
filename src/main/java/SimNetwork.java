@@ -30,9 +30,10 @@ public class SimNetwork extends SimState {
 	private static final long serialVersionUID = 1L;
 	private static double spreadWidth = 0.28;
 	private static double spreadHeight = 0.4;
-	private ArrayList<String> data = new ArrayList<String>();;
+	static ArrayList<String> data = new ArrayList<String>();;
 	private static int professionCounter = 0;
 	private static int genderCounter = 0;
+	private static long nodesToGenerate;
 
 	public SimNetwork(long seed) {
 
@@ -44,24 +45,6 @@ public class SimNetwork extends SimState {
 			e.printStackTrace();
 		}
 		stopper = new HashMap<SimNode, Stoppable>();
-	}
-
-	public static void deleteFile(File file) {
-		// File file = new File("c:\\logfile20100131.log");
-		try {
-			if (file.delete()) {
-				System.out.println(file.getName() + " is deleted!");
-			} else {
-				System.out.println("Delete operation is failed.");
-			}
-
-		}
-
-		catch (Exception e) {
-
-			e.printStackTrace();
-		}
-
 	}
 
 	protected static SimNode returnNode(String nodeName) {
@@ -77,7 +60,7 @@ public class SimNetwork extends SimState {
 		// creating a child between two nodes
 		System.out.println("creating child");
 		String childName = parent1.getNodeName() + 'c' + parent2.getNodeName();
-		childName = ""+17*childName.hashCode();
+		childName = "" + 17 * childName.hashCode();
 		System.out.println(childName + " born");
 		MersenneTwisterFast random = new MersenneTwisterFast();
 		SimNode child = new SimNode(childName);
@@ -112,19 +95,13 @@ public class SimNetwork extends SimState {
 
 	}
 
-	public static String combine(String path1, String path2) {
-		File file1 = new File(path1);
-		File file2 = new File(file1, path2);
-		return file2.getPath();
-	}
-
 	private void takeRelation() {
 		// taking relation
 		BufferedReader br = null;
 		String basePath = new File("").getAbsolutePath();
 		try {
 
-			br = new BufferedReader(new FileReader(combine(basePath,
+			br = new BufferedReader(new FileReader(SimManager.combine(basePath,
 					"src" + File.separator + "main" + File.separator + "resources" + File.separator + "relation.txt")));
 			String line;
 			while ((line = br.readLine()) != null) {
@@ -149,23 +126,31 @@ public class SimNetwork extends SimState {
 		}
 	}
 
-	private void takeInputFromFile() throws IOException {
+	/** Keep method private and non static */
+	protected static void takeInputFromFile() throws IOException {
 		// taking initial states
-		String basePath = new File("").getAbsolutePath();
-		BufferedReader br = null;
-		try {
-			br = new BufferedReader(new FileReader(combine(basePath,
-					"src" + File.separator + "main" + File.separator + "resources" + File.separator + "input.txt")));
-			String line;
-			while ((line = br.readLine()) != null) {
-				// process the line.
-				System.out.println(line);
-				getData().add(line);
+		// String basePath = new File("").getAbsolutePath();
+		// BufferedReader br = null;
+		// try {
+		// br = new BufferedReader(new FileReader(combine(basePath,
+		// "src" + File.separator + "main" + File.separator + "resources" +
+		// File.separator + "input.txt")));
+		// String line;
+		// while ((line = br.readLine()) != null) {
+		// // process the line.
+		// System.out.println(line);
+		// getData().add(line);
+		//
+		// }
+		// } finally {
+		// br.close();
+		// }
+		ScaleFreeConstructor sim = new ScaleFreeConstructor(nodesToGenerate);
+		data = sim.generateNodes();
+	}
 
-			}
-		} finally {
-			br.close();
-		}
+	public static void setNodes(long nodes) {
+		nodesToGenerate = nodes;
 	}
 
 	protected static void addEdgeLabel(SimNode v1, SimNode v2, String s) {
@@ -217,10 +202,13 @@ public class SimNetwork extends SimState {
 
 	}
 
-	private void takeInput(Schedule schedule) throws IOException {
+	/** Keep method private and non static */
+	protected static void takeInput(Schedule schedule) throws IOException {
 		int flag = 0;
-
-		for (String line : getData()) {
+		// Only for testing
+		MersenneTwisterFast random = new MersenneTwisterFast(System.currentTimeMillis());
+		System.out.println(data);
+		for (String line : data) {
 			// process the line.
 			System.out.println(line);
 			String[] n = line.split(" ");
