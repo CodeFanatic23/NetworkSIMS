@@ -25,7 +25,7 @@ public class SimManager {
 		
 	}
 	static SimManager s = new SimManager();
-	public static SimManager createObj(){
+	protected static SimManager createObj(){
 		return s;
 	}
 	

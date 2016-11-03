@@ -16,7 +16,7 @@ public class SimNode implements Steppable {
 	public SimSkill skills;
 	public int sharmaVariable;
 	public static int livingNode = 0;
-
+	private boolean test = true;
 	private static final long serialVersionUID = 1L;
 	private String nodeName;
 	private SimNode spouseObject;
@@ -142,11 +142,12 @@ public class SimNode implements Steppable {
 		return hash;
 	}
 
-	private void setHealth() {
+	protected void setHealth() {
 		// health = a*age^2 + b*age (increase with age and then decreases)
 		// k maximum health
 		// t age at which it will have maximum health
 		// d age at which it will die
+		
 		float k = (float) (randomNormal * 20 + 180);
 		int t = (int) (randomNormal * 7 + 27);
 		int d = getDeathAge();
@@ -154,10 +155,10 @@ public class SimNode implements Steppable {
 		float b = -k * d / (t * t - d * t);
 		float healthVar = a * sharmaVariable * sharmaVariable + b * sharmaVariable;
 		this.skills.changeSkillVal("health", healthVar);
-		// System.out.println("health of " + this.nodeName + " is " +
+//		 System.out.println("health of " + this.nodeName + " is " + healthVar);
 		// this.skills.getSkillMap().get("health"));
 	}
-//BuGGy
+
 	protected void setknowledge() {
 		// knowledge = c*(1-pow(e,-kx))
 		// c ~ N(23,1)
@@ -169,57 +170,57 @@ public class SimNode implements Steppable {
 
 
 	}
-
-	private void findAndMarryFromFile() {
-		for (String line : SimNetwork.relation) {
-			String[] n = line.split(" ");
-			if (this.getNodeName().equals(n[0]) || this.getNodeName().equals(n[1])) {
-				Bag out = SimNetwork.buddies.getEdges(SimNetwork.returnNode(n[0]), null);
-				int flag = 0;
-				for (int buddy = 0; buddy < out.size(); buddy++) {
-					// checking if already married
-					if (((String) (((Edge) out.get(buddy)).getInfo())).equals("marriage")) {
-						System.out.println(
-								this.getNodeName() + " " + this.getSpouseObject().getNodeName() + " already married");
-						flag = 1;
-						break;
-					}
-				}
-				if (flag == 0) {
-					if (this.getNodeName().equals(n[0])) {
-						// marring the node v0 v1
-						SimNode n1 = SimNetwork.returnNode(n[1]);
-						if (n1 != null) {
-							System.out.println(this.getNodeName() + " " + n1.getNodeName() + " happily married");
-
-							SimNetwork.buddies.addEdge(this, n1, n[2]);
-							SimNetwork.addEdgeLabel(this, n1, n[3]);
-							this.spouseObject = n1;
-							n1.setSpouseObject(this);
-						} else {
-							System.out.println("spouse already dead or not born");
-						}
-
-					} else {
-						// marring the node v1 v0
-						SimNode n0 = SimNetwork.returnNode(n[0]);
-						if (n0 != null) {
-							System.out.println(this.getNodeName() + " " + n0.getNodeName() + " happily married");
-							SimNetwork.buddies.addEdge(this, n0, n[2]);
-							SimNetwork.addEdgeLabel(this, n0, n[3]);
-							this.spouseObject = n0;
-							n0.setSpouseObject(this);
-						} else {
-							// spouse not born or dead
-							System.out.println("spouse already dead or not born");
-						}
-					}
-
-				}
-
-			}
-		}
-	}
+/** Will be used when file input is supported*/
+//	private void findAndMarryFromFile() {
+//		for (String line : SimNetwork.relation) {
+//			String[] n = line.split(" ");
+//			if (this.getNodeName().equals(n[0]) || this.getNodeName().equals(n[1])) {
+//				Bag out = SimNetwork.buddies.getEdges(SimNetwork.returnNode(n[0]), null);
+//				int flag = 0;
+//				for (int buddy = 0; buddy < out.size(); buddy++) {
+//					// checking if already married
+//					if (((String) (((Edge) out.get(buddy)).getInfo())).equals("marriage")) {
+//						System.out.println(
+//								this.getNodeName() + " " + this.getSpouseObject().getNodeName() + " already married");
+//						flag = 1;
+//						break;
+//					}
+//				}
+//				if (flag == 0) {
+//					if (this.getNodeName().equals(n[0])) {
+//						// marring the node v0 v1
+//						SimNode n1 = SimNetwork.returnNode(n[1]);
+//						if (n1 != null) {
+//							System.out.println(this.getNodeName() + " " + n1.getNodeName() + " happily married");
+//
+//							SimNetwork.buddies.addEdge(this, n1, n[2]);
+//							SimNetwork.addEdgeLabel(this, n1, n[3]);
+//							this.spouseObject = n1;
+//							n1.setSpouseObject(this);
+//						} else {
+//							System.out.println("spouse already dead or not born");
+//						}
+//
+//					} else {
+//						// marring the node v1 v0
+//						SimNode n0 = SimNetwork.returnNode(n[0]);
+//						if (n0 != null) {
+//							System.out.println(this.getNodeName() + " " + n0.getNodeName() + " happily married");
+//							SimNetwork.buddies.addEdge(this, n0, n[2]);
+//							SimNetwork.addEdgeLabel(this, n0, n[3]);
+//							this.spouseObject = n0;
+//							n0.setSpouseObject(this);
+//						} else {
+//							// spouse not born or dead
+//							System.out.println("spouse already dead or not born");
+//						}
+//					}
+//
+//				}
+//
+//			}
+//		}
+//	}
 
 	protected void findSimilarAndMarry() {
 		if (this.spouseObject == null) {
@@ -263,11 +264,14 @@ public class SimNode implements Steppable {
 			simMan.deleteLogs();
 			logFlag = 1;
 		}
+		
 		SimNetwork net = (SimNetwork) state;
+		if(!test){
 		Double2D me = net.yard.getObjectLocation(this);
 		MutableDouble2D sumForces = new MutableDouble2D();
 		sumForces.addIn(me);
 		net.yard.setObjectLocation(this, new Double2D(sumForces));
+		}
 
 		// set health skill of node
 		setHealth();

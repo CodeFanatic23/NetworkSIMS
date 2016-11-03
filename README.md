@@ -7,8 +7,8 @@ The best way to get started is importing the project in eclipse.Make sure you ha
 
 Follow this to import this project into eclipse:http://stackoverflow.com/a/36242422
 
-And you are done!You can now run various simulations by giving `simulation state` in the input files.
+And you are done!You can now run various simulations. The input is scale free one and is generated internally. You only need to input the number of agents you want in your simulation.
 
-Input files can be found in  `src/main/resources/`
+You also plot the result of simulation at different stages of simulation(one iteration of dimulation is 1 year of life) using PLOTGUI and save the graph as well.
 
-You will need to change the path to `input.txt` and `relation.txt` in `src/main/java/SimNetwork.java`.This will be automated soon enough.
+Resource files can be found in  `src/main/resources/` along with saved graphs.
