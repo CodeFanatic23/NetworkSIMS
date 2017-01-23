@@ -175,7 +175,10 @@ public class SimManager {
 			// path - /networkSIMS/src/main/resources/logs
 
 			String basePath = new File("").getAbsolutePath();
-
+//			System.out.println(pathFromBase);
+//			System.out.println(basePath);
+//			System.out.println(Filename);
+			System.out.println(combine(basePath, pathFromBase + Filename + ".sps"));
 			File file = new File(combine(basePath, pathFromBase + Filename + ".sps"));
 
 			// if file doesnt exists, then create it

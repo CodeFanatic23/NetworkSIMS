@@ -22,7 +22,13 @@ public class StartSimulation extends Application {
 	private static boolean finalblock = true;
 
 	public static void main(String[] args) {
+		
 		launch(args);
+	}
+	
+	public static void startSimulation()
+	{
+		launch();
 	}
 
 	public void start() {

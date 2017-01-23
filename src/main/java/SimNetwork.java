@@ -55,7 +55,12 @@ public class SimNetwork extends SimState {
 		}
 		return null;
 	}
-
+	
+	public static void logDegreeToFile(String name, long degree) {
+		String content = Long.toString(degree) + "\r\n";
+		SimManager.writeIntoFile(content, "src/main/resources/logs/", name, true);
+	}
+	
 	protected static void createChildNode(SimNode parent1, SimNode parent2) {
 		// creating a child between two nodes
 		System.out.println("creating child");

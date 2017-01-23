@@ -43,6 +43,9 @@ public class SimNode implements Steppable {
 	protected int deathAge;
 	protected long previousAge;
 	
+	
+	public static Skill skillObject;
+	
 	protected SimManager simMan = SimManager.createObj();
 
 	// private static int flag1 = 0;
@@ -142,34 +145,37 @@ public class SimNode implements Steppable {
 		return hash;
 	}
 
-	protected void setHealth() {
-		// health = a*age^2 + b*age (increase with age and then decreases)
-		// k maximum health
-		// t age at which it will have maximum health
-		// d age at which it will die
-		
-		float k = (float) (randomNormal * 20 + 180);
-		int t = (int) (randomNormal * 7 + 27);
-		int d = getDeathAge();
-		float a = k / (t * t - d * t);
-		float b = -k * d / (t * t - d * t);
-		float healthVar = a * sharmaVariable * sharmaVariable + b * sharmaVariable;
-		this.skills.changeSkillVal("health", healthVar);
-//		 System.out.println("health of " + this.nodeName + " is " + healthVar);
-		// this.skills.getSkillMap().get("health"));
-	}
-
-	protected void setknowledge() {
-		// knowledge = c*(1-pow(e,-kx))
-		// c ~ N(23,1)
-		// k = 0.055
-		float c = (float) (randomNormal * 2 + 23);
-		float knowledgeVar = (float) (c * (1 - Math.exp(-1 * (0.055) * sharmaVariable)));// + 2000;
-		this.skills.addSkill("knowledge", knowledgeVar);
-//		 System.out.println("knowledge of " + this.nodeName + " is " + knowledgeVar);
-
-
-	}
+//	protected void setHealth() {
+//		// health = a*age^2 + b*age (increase with age and then decreases)
+//		// k maximum health
+//		// t age at which it will have maximum health
+//		// d age at which it will die
+//		
+//		float k = (float) (randomNormal * 20 + 180);
+//		int t = (int) (randomNormal * 7 + 27);
+//		int d = getDeathAge();
+//		float a = k / (t * t - d * t);
+//		float b = -k * d / (t * t - d * t);
+//		float healthVar = a * sharmaVariable * sharmaVariable + b * sharmaVariable;
+//		this.skills.changeSkillVal("health", healthVar);
+////		 System.out.println("health of " + this.nodeName + " is " + healthVar);
+//		// this.skills.getSkillMap().get("health"));
+//	}
+//
+//	protected void setknowledge() {
+//		// knowledge = c*(1-pow(e,-kx))
+//		// c ~ N(23,1)
+//		// k = 0.055
+//		float c = (float) (randomNormal * 2 + 23);
+//		float knowledgeVar = (float) (c * (1 - Math.exp(-1 * (0.055) * sharmaVariable)));// + 2000;
+//		this.skills.addSkill("knowledge", knowledgeVar);
+////		 System.out.println("knowledge of " + this.nodeName + " is " + knowledgeVar);
+//
+//
+//	}
+	
+	
+	
 /** Will be used when file input is supported*/
 //	private void findAndMarryFromFile() {
 //		for (String line : SimNetwork.relation) {
@@ -234,8 +240,8 @@ public class SimNode implements Steppable {
 						&& (Gender.equals("male") && (((SimNode) n.get(i)).Gender).equals("female")
 								|| Gender.equals("female") && (((SimNode) n.get(i)).Gender).equals("male"))) {
 
-					diff1 = ((SimNode) n.get(i)).skills.getSkillMap().get("knowledge")
-							- this.skills.getSkillMap().get("knowledge");
+					diff1 = Math.abs(((SimNode) n.get(i)).skills.getSkillMap().get("knowledge")
+							- this.skills.getSkillMap().get("knowledge"));
 					if (diff1 < diff) {
 						diff = diff1;
 						spouse = (SimNode) n.get(i);
@@ -274,8 +280,15 @@ public class SimNode implements Steppable {
 		}
 
 		// set health skill of node
-		setHealth();
-		setknowledge();
+		//setHealth();
+		//setknowledge();
+		
+		float knowledgeVar = skillObject.setKnowledge(sharmaVariable);
+		this.skills.addSkill("knowledge", knowledgeVar);
+		
+		float healthVar = skillObject.setHealth(sharmaVariable,deathAge);
+		this.skills.addSkill("health", healthVar);
+		
 		/*
 		 * approximate life stages 
 		 * 1) Born 0 
@@ -465,16 +478,12 @@ public class SimNode implements Steppable {
 		// increase age
 //		System.out.println("age - " + this.nodeName + " " + sharmaVariable);
 		sharmaVariable++;
-
+		//System.out.println(this.label);
 		long degree = SimNetwork.buddies.getEdges(this, null).size();
-		logDegreeToFile(Long.toString(state.schedule.getSteps()), degree);
+		SimNetwork.logDegreeToFile(Long.toString(state.schedule.getSteps()), degree);
 
 	}
 
-	private void logDegreeToFile(String name, long degree) {
-		String content = Long.toString(degree) + "\r\n";
-		SimManager.writeIntoFile(content, "src/main/resources/logs/", name, true);
-	}
 
 	public String getNodeName() {
 		return nodeName;

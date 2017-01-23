@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 import org.junit.BeforeClass;
@@ -256,12 +257,12 @@ public class Tests {
 		else{
 			min = d;
 		}
-		for(int i = 0;i < min;i++){
-		node1.step(state);
-		node2.step(state);
-		node3.step(state);
-		node4.step(state);
-		}
+//		for(int i = 0;i < min;i++){
+//		node1.step(state);
+//		node2.step(state);
+//		node3.step(state);
+//		node4.step(state);
+//		}
 		System.out.println("dwew"+SimNetwork.nodes.size());
 		assertTrue(SimNetwork.nodes.size() >= 4);
 		
@@ -275,14 +276,16 @@ public class Tests {
 		node2 = obj.addNewNodes("N2");
 		node1.sharmaVariable = 10;
 		node2.sharmaVariable = 10;
-		node1.setknowledge();
-		node2.setknowledge();
-	//	node2.skills.changeSkillVal("knowledge", (float)3000.0);
+		Random r = new Random();
+		
+		node1.skills.changeSkillVal("knowledge", r.nextFloat()*10000);
+		node2.skills.changeSkillVal("knowledge", r.nextFloat()*10000);
 		node1.findSimilarAndMarry();
 		float val1 = node1.skills.getSkillVal("knowledge");
 		float val2 = node2.skills.getSkillVal("knowledge");
 		System.out.println("VAL1:"+val1 + "---VAL2:" + val2);
-		if(val2 - val1 < 1000.0) {
+		System.out.println((a.buddies.getEdges(node1, node2, null).size()));
+		if(Math.abs(val2 - val1) < 1000.0) {
 			assertEquals(a.buddies.getEdges(node1, node2, null).size(),1);
 		}
 		else{
@@ -326,20 +329,20 @@ public class Tests {
 		}
 	}
 	
-	@Test
-	public void setHealthTest(){
-		obj.fullResetState();
-		node1 = obj.addNewNodes("N1");
-		node1.sharmaVariable = 30;
-		node1.setHealth();
-		float val1 = node1.skills.getSkillVal("health");
-		node1.sharmaVariable = 50;
-		node1.setHealth();
-	
-		float val2 = node1.skills.getSkillVal("health");
-		System.out.println("VAL1:"+val1 + "---VAL2:" + val2);
-		assertTrue(val1 > val2);
-	}
+//	@Test
+//	public void setHealthTest(){
+//		obj.fullResetState();
+//		node1 = obj.addNewNodes("N1");
+//		node1.sharmaVariable = 30;
+//		//node1.setHealth();
+//		float val1 = node1.skills.getSkillVal("health");
+//		node1.sharmaVariable = 50;
+//		//node1.setHealth();
+//	
+//		float val2 = node1.skills.getSkillVal("health");
+//		System.out.println("VAL1:"+val1 + "---VAL2:" + val2);
+//		assertTrue(val1 > val2);
+//	}
 
 	public int increaseVal(Bag e, HashMap<String, Integer> s, int i) {
 		if (s.get(((SimNode) e.get(i)).getProfession()) != null) {
