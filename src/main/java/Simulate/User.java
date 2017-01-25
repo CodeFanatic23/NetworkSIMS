@@ -1,4 +1,10 @@
+package Simulate;
+
 import java.util.Random;
+
+import Network.SimNode;
+import Skill.Health;
+import Skill.Knowledge;
 
 public class User implements Knowledge,Health {
 	public static void main(String[] arg)

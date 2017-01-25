@@ -1,3 +1,4 @@
+package Skill;
 
 public interface Skill {
 	public float setKnowledge(int age);

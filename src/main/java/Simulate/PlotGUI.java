@@ -1,7 +1,10 @@
+package Simulate;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 
+import Manager.SimManager;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;

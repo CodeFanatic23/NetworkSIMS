@@ -1,3 +1,4 @@
+package Manager;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -25,7 +26,7 @@ public class SimManager {
 		
 	}
 	static SimManager s = new SimManager();
-	protected static SimManager createObj(){
+	public static SimManager createObj(){
 		return s;
 	}
 	
@@ -64,7 +65,7 @@ public class SimManager {
 	}
 	
 	
-	 protected void createDegreeDistribution(long age,boolean save)
+	 public void createDegreeDistribution(long age,boolean save)
 	    {
 	    	BufferedReader br = null;
 	    	String basePath = new File("").getAbsolutePath();

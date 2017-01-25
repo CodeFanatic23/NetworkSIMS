@@ -1,3 +1,4 @@
+package Network;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -7,6 +8,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import Manager.ScaleFreeConstructor;
+import Manager.SimManager;
 import ec.util.MersenneTwisterFast;
 import sim.engine.Schedule;
 import sim.engine.SimState;
@@ -47,7 +50,7 @@ public class SimNetwork extends SimState {
 		stopper = new HashMap<SimNode, Stoppable>();
 	}
 
-	protected static SimNode returnNode(String nodeName) {
+	public static SimNode returnNode(String nodeName) {
 		for (SimNode s : nodes) {
 			if (s.getNodeName().equals(nodeName)) {
 				return s;
@@ -61,7 +64,7 @@ public class SimNetwork extends SimState {
 		SimManager.writeIntoFile(content, "src/main/resources/logs/", name, true);
 	}
 	
-	protected static void createChildNode(SimNode parent1, SimNode parent2) {
+	public static void createChildNode(SimNode parent1, SimNode parent2) {
 		// creating a child between two nodes
 		System.out.println("creating child");
 		String childName = parent1.getNodeName() + 'c' + parent2.getNodeName();
@@ -132,7 +135,7 @@ public class SimNetwork extends SimState {
 	}
 
 	/** Keep method private and non static */
-	protected static void takeInputFromFile() throws IOException {
+	public static void takeInputFromFile() throws IOException {
 		// taking initial states
 		// String basePath = new File("").getAbsolutePath();
 		// BufferedReader br = null;
@@ -158,7 +161,7 @@ public class SimNetwork extends SimState {
 		nodesToGenerate = nodes;
 	}
 
-	protected static void addEdgeLabel(SimNode v1, SimNode v2, String s) {
+	public static void addEdgeLabel(SimNode v1, SimNode v2, String s) {
 		Bag b = buddies.getEdges(v1, v2, null);
 		// adding label on the edge between two nodes
 		for (int i = 0; i < b.size(); i++) {
@@ -208,7 +211,7 @@ public class SimNetwork extends SimState {
 	}
 
 	/** Keep method private and non static */
-	protected static void takeInput(Schedule schedule) throws IOException {
+	public static void takeInput(Schedule schedule) throws IOException {
 		int flag = 0;
 		// Only for testing
 		MersenneTwisterFast random = new MersenneTwisterFast(System.currentTimeMillis());

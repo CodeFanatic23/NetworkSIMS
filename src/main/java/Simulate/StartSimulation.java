@@ -1,3 +1,6 @@
+package Simulate;
+
+import Network.SimNetwork;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;

@@ -1,3 +1,4 @@
+package Skill;
 import java.util.Random;
 
 public interface Knowledge extends Skill {

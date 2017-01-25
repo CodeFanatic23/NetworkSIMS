@@ -1,7 +1,10 @@
+package Network;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Random;
 
+import Manager.SimManager;
+import Skill.Skill;
 import sim.engine.SimState;
 import sim.engine.Steppable;
 import sim.field.network.Edge;
@@ -228,7 +231,7 @@ public class SimNode implements Steppable {
 //		}
 //	}
 
-	protected void findSimilarAndMarry() {
+	public void findSimilarAndMarry() {
 		if (this.spouseObject == null) {
 			Bag n = SimNetwork.buddies.getAllNodes();
 			float diff = (float) 1000.0;
