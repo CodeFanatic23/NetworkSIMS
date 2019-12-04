@@ -12,3 +12,6 @@ And you are done!You can now run various simulations. The input is scale free on
 You can also plot the result of simulation at different stages of simulation(one iteration of simulation is 1 year of life) using PLOTGUI and save the graph as well.
 
 Resource files can be found in  `src/main/resources/` along with saved graphs.
+
+## Contributors
+ - [Anant Sharma](https://github.com/anant2047)
